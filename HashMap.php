@@ -42,12 +42,12 @@ class HashMap implements JsonSerializable, ArrayAccess, Iterator {
      * @param type $val_class The class you wish to use for the Values
      * @throws Exception If the class names are invalid/do not exist.
      */
-    public function __construct($key_class, $val_class) {
-        if(!class_exists($key_class)) throw new Exception('Class used for key does not exist.');
-        if(!class_exists($val_class)) throw new Exception('Class used for val does not exist.');
+    public function __construct($key_class=null, $val_class=null) {
+        if($key_class !== null && !class_exists($key_class)) throw new Exception('Class used for key does not exist.');
+        if($val_class !== null && !class_exists($val_class)) throw new Exception('Class used for val does not exist.');
         
-        $this->keys_class = $key_class;
-        $this->values_class = $val_class;
+        if($key_class !== null) $this->keys_class = $key_class;
+        if($val_class !== null) $this->values_class = $val_class;
         
         $this->keys = array();
         $this->values = array();
@@ -56,11 +56,25 @@ class HashMap implements JsonSerializable, ArrayAccess, Iterator {
     public function getKeyType() {return $this->keys_class;}
     public function getValueType() {return $this->values_class;}
     
-    public function isValidKeyClass($clazz) {return is_subclass_of($clazz, $this->keys_class);}
-    public function isValidValueClass($clazz) {return is_subclass_of($clazz, $this->values_class);}
+    public function isValidKeyClass($clazz) {
+        if(isset($this->keys_class)) return is_subclass_of($clazz, $this->keys_class) || $clazz === $this->keys_class;
+        return true;
+    }
     
-    public function isValidKey($clazz) {return $clazz instanceof $this->keys_class;}
-    public function isValidValue($clazz) {return $clazz instanceof $this->values_class;}
+    public function isValidValueClass($clazz) {
+        if(isset($this->values_class)) return is_subclass_of($clazz, $this->values_class) || $clazz === $this->values_class;
+        return true;
+    }
+    
+    
+    public function isValidKey($clazz) {
+        if(isset($this->keys_class)) return $clazz instanceof $this->keys_class;
+        return isset($clazz) && $clazz !== null;
+    }
+    public function isValidValue($clazz) {
+        if(isset($this->values_class)) return $clazz instanceof $this->values_class;
+        return isset($clazz) && $clazz !== null;
+    }
     
     /**
      * Returns the list of keys used in the map.
