@@ -33,6 +33,15 @@ class HashMap implements JsonSerializable, ArrayAccess, Iterator {
     
     private $position;
     
+    /**
+     * Creates a new HashMap. HashMaps are similar to arrays, but instead of
+     * string or integer index's, they are referenced by other objects/data
+     * types.
+     * 
+     * @param mixed $key_class The class you wish to use for the Key
+     * @param type $val_class The class you wish to use for the Values
+     * @throws Exception If the class names are invalid/do not exist.
+     */
     public function __construct($key_class, $val_class) {
         if(!class_exists($key_class)) throw new Exception('Class used for key does not exist.');
         if(!class_exists($val_class)) throw new Exception('Class used for val does not exist.');
@@ -53,6 +62,11 @@ class HashMap implements JsonSerializable, ArrayAccess, Iterator {
     public function isValidKey($clazz) {return $clazz instanceof $this->keys_class;}
     public function isValidValue($clazz) {return $clazz instanceof $this->values_class;}
     
+    /**
+     * Returns the list of keys used in the map.
+     * 
+     * @return array
+     */
     public function keySet() {return $this->keys;}
     
     private function getIndex(&$key_obj) {
@@ -63,6 +77,13 @@ class HashMap implements JsonSerializable, ArrayAccess, Iterator {
         return -1;
     }
     
+    /**
+     * Returns true if the specified key exists in the map.
+     * 
+     * @param mixed $key_obj
+     * @return bool
+     * @throws Exception If key is an invalid type.
+     */
     public function isKeySet(&$key_obj) {
         if(!$this->isValidKey($key_obj)) throw new Exception('Invalid Key Type');
         return $this->getIndex($key_obj) !== -1;
@@ -86,6 +107,14 @@ class HashMap implements JsonSerializable, ArrayAccess, Iterator {
         return $this->size() > 0;
     }
     
+    /**
+     * Puts an object into the map at the index $key. If $key already exists in
+     * the array then the value is replaced with the new value.
+     * 
+     * @param mixed $key Key Index for the supplied value
+     * @param mixed $value Value to be put at the index $key
+     * @throws Exception If the Key or Value Type is invalid
+     */
     public function put(&$key, &$value) {
         //Validate class types
         if(!$this->isValidKey($key)) throw new Exception('Invalid Key Type');
@@ -103,6 +132,13 @@ class HashMap implements JsonSerializable, ArrayAccess, Iterator {
         $this->values[$index] = $value;
     }
     
+    /**
+     * Returns the object at the index $key.
+     * 
+     * @param mixed $key
+     * @return mixed
+     * @throws Exception If the Key Type is invalid
+     */
     public function get(&$key) {
         if(!$this->isValidKey($key)) throw new Exception('Invalid Key Type');
         $index = $this->getIndex($key);
@@ -110,6 +146,12 @@ class HashMap implements JsonSerializable, ArrayAccess, Iterator {
         return $this->values[$index];
     }
     
+    /**
+     * Removes an object from the map based off the key.
+     * 
+     * @param mixed $key The key to remove by.
+     * @throws Exception If the Key is invalid, or if the key is not in the Map.
+     */
     public function remove(&$key) {
         if(!$this->isValidKey($key)) throw new Exception('Invalid Key Type');
         $index = $this->getIndex($key);
